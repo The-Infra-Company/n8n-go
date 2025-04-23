@@ -1,0 +1,40 @@
+# https://taskfile.dev
+version: "3"
+tasks:
+  default:
+    desc: "Help menu"
+    cmds:
+      - task --list
+
+  test:
+    desc: "Run acceptance tests against the client"
+    env:
+      TF_ACC: "true"
+      TF_LOG: "INFO"  # Change to DEBUG for deeper logging
+    cmds:
+      - go mod tidy
+      - go test ./... -v -timeout=30m
+
+  fmt:
+    desc: "Run gofumpt against the provider"
+    cmds:
+      - gofumpt -w .
+
+  lint:
+    desc: "Run linters against the client"
+    cmds:
+      - golangci-lint run
+      - cmd: |
+          BADFMT=$(gofmt -s -l .)
+          test -z "$BADFMT" || (echo -e "Invalid gofmt:\n$BADFMT"; exit 1)
+        silent: true
+      - go vet ./...
+
+  prep:
+    desc: "Prepare the client"
+    deps:
+      - test
+      - fmt
+      - lint
+    cmds:
+      - go mod tidy

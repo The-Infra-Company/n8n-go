@@ -1,0 +1,12 @@
+# Copyright (c) 1898 & Co.
+# SPDX-License-Identifier: Apache-2.0
+
+repos:
+  - repo: local
+    hooks:
+      - id: gofumpt
+        name: gofumpt
+        entry: bash -c 'task fmt'
+        language: system
+        types: ["go"]
+        pass_filenames: false
